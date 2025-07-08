@@ -110,7 +110,7 @@ static const VideoMode VMODE_1920x1080 = {
     .vpe = 1089,
     .vmax = 1124,
     .vpol = 1,
-    .freq = 594 //148.57 is close enough
+    .freq = 148.5 //148.57 is close enough
 };
 
 

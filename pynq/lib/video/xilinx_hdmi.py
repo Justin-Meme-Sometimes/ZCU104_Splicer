@@ -135,10 +135,7 @@ class HdmiTxSs(DefaultIP, VideoOutFrontend):
         frequency = _hdmi_lib.HdmiTx_set_format(
             self.handle, self.mode.width, self.mode.height, self.mode.fps
         )
-       
-        print(frequency)
         if frequency == -1:
-            print("Hello World")
             raise RuntimeError("Resolution not supported")
         elif frequency == -2:
             raise RuntimeError("Could not set PHY clock")

@@ -5,5 +5,3 @@ export SRC := $(patsubst %, _xhdmi/%, $(wildcard *.c))
 
 all:
 	make -C .. -f embeddedsw_lib.mk
-clean:
-	rm -f *.swp *.o *.bit *.xo *.xclbin

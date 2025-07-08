@@ -265,72 +265,18 @@ int HdmiTx_connected(void* handle) {
 int HdmiTx_set_format(void* handle, int hsize, int vsize, int fps) {
 	XVidC_VideoMode mode = XVidC_GetVideoModeId(hsize, vsize, fps, 0);
 	XHdmiC_AVI_InfoFrame *AviInfoFramePtr;
-	
-	// Special case for 1080p@240Hz
-	if(hsize == 1920 && vsize == 1080 && fps == 120) {
-		// If the mode is not already defined in the timing table
-		if (mode == XVIDC_VM_NOT_SUPPORTED) {
-			// Use custom mode for this specific resolution/framerate
-			mode = XVIDC_VM_CUSTOM;
-		}
-	} else if (mode == XVIDC_VM_NOT_SUPPORTED) {
-		return -1;
-	}
+	if (mode == XVIDC_VM_NOT_SUPPORTED) return -1;
 	
 	HdmiTx* tx = (HdmiTx*)handle;
 	XV_HdmiTxSs_DetectHdmi20(&tx->HdmiTxSs);
 	AviInfoFramePtr = XV_HdmiTxSs_GetAviInfoframe(&tx->HdmiTxSs);
-	
-	int clock;
-	// if(hsize == 1920 && vsize == 1080 && fps == 240) {
-	// 	// Manually set the clock for 1080p@240Hz
-	// 	clock = 297000000; // 594 MHz
-	// 	XV_HdmiTxSs_DetectHdmi20(&tx->HdmiTxSs);
-	// 	// If using custom mode, need to configure the stream manually
-	// 	if (mode == XVIDC_VM_CUSTOM) {
-	// 		XVidC_VideoStream *VidStreamPtr = XV_HdmiTxSs_GetVideoStream(&tx->HdmiTxSs);
-			
-	// 		// Set custom timing for 1080p@240Hz
-	// 		VidStreamPtr->VmId = XVIDC_VM_CUSTOM;
-	// 		VidStreamPtr->Timing.HActive = 1920;
-	// 		VidStreamPtr->Timing.HFrontPorch = 88;
-	// 		VidStreamPtr->Timing.HSyncWidth = 44;
-	// 		VidStreamPtr->Timing.HBackPorch = 148;
-	// 		VidStreamPtr->Timing.HTotal = 2200;
-	// 		VidStreamPtr->Timing.HSyncPolarity = 1;
-			
-	// 		VidStreamPtr->Timing.VActive = 1080;
-	// 		VidStreamPtr->Timing.F0PVFrontPorch = 4;
-	// 		VidStreamPtr->Timing.F0PVSyncWidth = 5;
-	// 		VidStreamPtr->Timing.F0PVBackPorch = 36;
-	// 		VidStreamPtr->Timing.F0PVTotal = 1125;
-	// 		VidStreamPtr->Timing.VSyncPolarity = 1;
-			
-	// 		VidStreamPtr->FrameRate = 240;
-	// 		VidStreamPtr->ColorFormatId = XVIDC_CSF_YCBCR_420; // change this
-	// 		VidStreamPtr->ColorDepth = XVIDC_BPC_8;
-	// 		VidStreamPtr->PixPerClk = 2;
-	// 		VidStreamPtr->IsInterlaced = 0;
-			
-	// 		// Call SetStream with our custom mode
-	// 		XV_HdmiTxSs_SetStream(&tx->HdmiTxSs, mode, XVIDC_CSF_YCBCR_420, XVIDC_BPC_8, NULL);
-	// 	} else {
-	// 		// Use the existing mode from the timing table
-	// 		XV_HdmiTxSs_SetStream(&tx->HdmiTxSs, mode, XVIDC_CSF_RGB, XVIDC_BPC_8, NULL);
-	// 	}
-	// } else {
-		// Standard case for other resolutions
-		clock = XV_HdmiTxSs_SetStream(&tx->HdmiTxSs, mode, XVIDC_CSF_RGB, XVIDC_BPC_8, NULL);
-	// }
-	
+	int clock = XV_HdmiTxSs_SetStream(&tx->HdmiTxSs, mode, XVIDC_CSF_RGB, XVIDC_BPC_8, NULL);
 
-	
 	tx->phy->Vphy.HdmiTxRefClkHz = clock;
 	int status = XVphy_SetHdmiTxParam(&tx->phy->Vphy, 0, XVPHY_CHANNEL_ID_CHA, 2, 8, XVIDC_CSF_RGB);
 	if (status != XST_SUCCESS) {
 		return -2;
 	}
-	xdbg_printf(XDBG_DEBUG_GENERAL, "Clock: %d \r\n\r\n", clock);
 	AviInfoFramePtr->Version = 2;
 	AviInfoFramePtr->ColorSpace = XV_HdmiC_XVidC_To_IfColorformat(XVIDC_CSF_RGB);
 	AviInfoFramePtr->VIC = tx->HdmiTxSs.HdmiTxPtr->Stream.Vic;

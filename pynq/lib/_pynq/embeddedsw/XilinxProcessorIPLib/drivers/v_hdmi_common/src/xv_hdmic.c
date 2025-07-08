@@ -215,7 +215,6 @@ const XHdmiC_VicTable VicTable[VICTABLE_SIZE] = {
 	{ XVIDC_VM_4096x2160_100_P, XHDMIC_PIC_ASPECT_RATIO_256_135, 218 },
 	{ XVIDC_VM_4096x2160_120_P, XHDMIC_PIC_ASPECT_RATIO_256_135, 219 },
 };
-
 /**
 * This table contains the attributes for various FRL Rate.
 * Each entry is of the format:

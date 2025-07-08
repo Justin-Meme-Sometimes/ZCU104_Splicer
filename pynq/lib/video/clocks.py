@@ -240,7 +240,8 @@ class IDT_8T49N24:
             raise RuntimeError("Input Frequency Above Maximum")
         if fout < IDT_8T49N24X_FOUT_MIN:
             raise RuntimeError("Output Frequency Below Minimum")
-      
+        if fout > IDT_8T49N24X_FOUT_MAX:
+            raise RuntimeError("Output Frequency Above Maximum")
 
         settings = _calculate_settings(fin, fout)
         self.enable(False)
