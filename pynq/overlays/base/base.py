@@ -11,12 +11,6 @@ class BaseOverlay(pynq.Overlay):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.is_loaded():
-            self.iop_pmod0.mbtype = "Pmod"
-            self.iop_pmod1.mbtype = "Pmod"
-            self.PMOD0 = self.iop_pmod0.mb_info
-            self.PMOD1 = self.iop_pmod1.mb_info
-            self.PMODA = self.PMOD0
-            self.PMODB = self.PMOD1
             self.leds = self.gpio_leds.channel1
             self.leds.setdirection('out')
             self.leds.setlength(4)
